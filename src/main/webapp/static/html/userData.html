@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/userData.css">
+<script type="text/javascript" src="/static/plugin/jquery/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/static/plugin/layer-3.0.1/layer.js"></script>
+<script type="text/javascript" src="/static/plugin/vue-2.0/vue.min.js"></script>
+</head>
+<body>
+	<div id="main">
+		<div class="tab">
+			<ul>
+				<li class="active" @click="chnageTab(1)">个人信息</li>
+				<li @click="chnageTab(2)">家庭信息</li>
+				<div class="clear"></div>
+			</ul>
+		</div>
+		<div class="content" v-show="tab == 1">
+			<table class="table">
+				<tr>
+					<th>账号</th>
+					<td>{{user.name}}</td>
+				</tr>
+				<tr>
+					<th>真实姓名</th>
+					<td>{{user.realName}}</td>
+				</tr>
+				<tr>
+					<th>账号创建时间</th>
+					<td>{{user.createTime}}</td>
+				</tr>
+				<tr>
+					<th>上次修改时间</th>
+					<td>{{user.updateTime}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="content" v-show="tab == 2 && family != null">
+			<div class="info-block">
+				<div class="info-block-title">基本信息<i class="icon-up"></i></div>
+				<div class="info-block-body">
+					<table class="table">
+						<tr>
+							<th>家庭账号</th>
+							<td>{{family.account}}</td>
+						</tr>
+						<tr>
+							<th>家庭名称</th>
+							<td>{{family.name}}</td>
+						</tr>
+						<tr>
+							<th>超级管理员</th>
+							<td>{{admin}}</td>
+						</tr>
+						<tr>
+							<th>创建人</th>
+							<td>{{family.createUser}}</td>
+						</tr>
+						<tr>
+							<th>创建时间</th>
+							<td>{{family.createTime}}</td>
+						</tr>
+						<tr>
+							<th>上次更新人</th>
+							<td>{{family.updateUser}}</td>
+						</tr>
+						<tr>
+							<th>上次更新时间</th>
+							<td>{{family.updateTime}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="info-block">
+				<div class="info-block-title">家庭成员<i class="icon-up"></i></div>
+				<div class="info-block-body">
+					<table id="familyUserList" class="table">
+						<tr>
+							<th>序号</th>
+							<th>姓名</th>
+							<th>权限</th>
+							<th>创建时间</th>
+							<th>操作</th>
+						</tr>
+						<tr v-for="(user,index) in familyUserList">
+							<td>{{index+1}}</td>
+							<td>{{user.realName}}</td>
+							<td v-html="getPower(user.isAdmin)"></td>
+							<td>{{user.createTime}}</td>
+							<td><a href="javascript:void(0)">编辑</a></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="content" v-show="tab == 2 && family == null">
+			暂时未加入任何家庭
+		</div>
+	</div>
+<script>
+	var user = JSON.parse('${user}');
+	var family = JSON.parse('${family}');
+	var admin = '${admin}';
+	var familyUserList = JSON.parse('${familyUserList}');
+	var vue = new Vue({
+		el: '#main',
+		data: {
+			user: user,
+			family: family,
+			admin: admin,
+			tab: 1,
+			familyUserList: familyUserList
+		},
+		mounted: function(){
+			$(document).on('click','.info-block-title i', function(event){
+				if($(event.target).hasClass('icon-up')){
+					$(event.target).removeClass('icon-up').addClass('icon-down');
+					$(event.target).parent().next().hide();
+				}else{
+					$(event.target).removeClass('icon-down').addClass('icon-up');
+					$(event.target).parent().next().show();
+				}
+			})
+		},
+		methods: {
+			chnageTab: function(num){
+				$.each($('.tab').find('li'),function(k,v){
+					$(v).removeClass('active');
+				})
+				$('.tab li:nth-of-type('+num+')').addClass('active');
+				this.tab = num;
+			},
+			getPower: function(num){
+				var power = "";
+				if(num == 1){
+					power = "超级管理员";
+				}else if(num == 2){
+					power = "管理员";
+				}else{
+					power = "--"
+				}
+				return power;
+			}
+		}
+	})
+</script>
+</body>
+</html>

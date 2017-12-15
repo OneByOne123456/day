@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>天天记账</title>
+<script type="text/javascript" src="/static/plugin/jquery/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/static/plugin/layer-3.0.1/layer.js"></script>
+<style type="text/css">
+	body{
+		width:100%;
+		height:100%;
+	}
+	.main{
+		position: absolute;
+		top: 0;
+		left:0;
+		right:0;
+		bottom: 0;
+	}
+	.content{
+		margin: 0 auto;
+		margin-top: 200px;
+		display: inline-block;
+		width:300px;
+		border: 1px solid #ccc;
+	}
+	.title{
+		background-color: #B4CDE6;
+		padding: 5px 10px;
+	}
+	.row{
+		padding: 5px 10px;
+		text-align: center;
+	}
+	.showDiv{
+		display: block;
+	}
+	.hideDiv{
+		display: none;
+	}
+	button:hover{
+		cursor: pointer;
+	}
+</style>
+</head>
+<body>	
+	<div class="main">
+		<div class="login showDiv content">
+			<div class="title">系统登录</div>
+			<div>
+				<div class="row">
+					<label>账号：</label>
+					<input type="text" id="name">
+				</div>
+				<div class="row">
+					<label>密码：</label>
+					<input type="password" id="password">
+				</div>
+				<div class="row">
+					<button onclick="login()">登录</button>
+					<button onclick="$('.register').removeClass('hideDiv').addClass('showDiv');$('.login').removeClass('showDiv').addClass('hideDiv');clearAll();">注册</button>
+				</div>
+			</div>
+		</div>
+		<div class="register hideDiv content">
+			<div class="title">注册</div>
+			<div>
+				<div class="row">
+					<label>&emsp;&emsp;账号：</label>
+					<input type="text" id="reg_name">
+				</div>
+				<div class="row">
+					<label>&emsp;&emsp;密码：</label>
+					<input type="password" id="reg_password">
+				</div>
+				<div class="row">
+					<label>确认密码：</label>
+					<input type="password" id="reg_password2">
+				</div>
+				<div class="row">
+					<label>真实姓名：</label>
+					<input type="text" id="reg_realName">
+				</div>
+				<div class="row">
+					<button onclick="register()">确认注册</button>
+					<button onclick="clearAll()">重置</button>
+					<button onclick="$('.register').removeClass('showDiv').addClass('hideDiv');$('.login').removeClass('hideDiv').addClass('showDiv');">返回</button>
+				</div>
+			</div>
+		</div>
+		<div class="family hideDiv content">
+			<div class="title">创建家庭组</div>
+			<div class="row">
+				<label>家庭组账号：</label>
+				<input type="text" id="familyAccount">
+			</div>
+			<div class="row">
+				<label>家庭组名称：</label>
+				<input type="text" id="familyName">
+			</div>
+			<div class="row">
+				<button onclick="createFamily()">确认创建</button>
+				<button onclick="window.location.href='/user/index.do'">取消创建</button>
+			</div>
+		</div>
+	</div>
+	<script>
+		function login(){
+			var name = $.trim($('#name').val());
+			var password = $.trim($('#password').val());
+			$.ajax({
+				url: '/user/login.do',
+				data:{name:name,password:password},
+				type: 'post',
+				success: function(data){
+					if(data.code == 200){
+						if(data.data != null){
+							window.location.href="/user/index.do";
+						}else{
+							layer.confirm('还没有家庭组，是否需要创建？',{title:'天天记账',icon:3},function(){
+								$('.login').removeClass('showDiv').addClass('hideDiv');
+								$('.register').removeClass('showDiv').addClass('hideDiv');
+								$('.family').removeClass('hideDiv').addClass('showDiv');
+								layer.closeAll();
+							},function(){
+								window.location.href="/user/index.do";
+							})
+						}
+					}else{
+						layer.msg('账号或密码错误！',{time:1000});
+					}
+				}
+			})
+		}
+		function register(){
+			var name = $.trim($('#reg_name').val());
+			var p1 = $.trim($('#reg_password').val());
+			var p2 = $.trim($('#reg_password2').val());
+			var realName = $.trim($('#reg_realName').val());
+			if(name == ''){
+				layer.msg('请填写账号！',{time:1000});
+				return;
+			}
+			if(p1 == ''){
+				layer.msg('密码不能为空！',{time:1000});
+				return;
+			}
+			if(p1 != p2){
+				layer.msg('两次密码不一致！',{time:1000});
+				return;
+			}
+			$.ajax({
+				url: '/user/register.do',
+				type: 'post',
+				data: {name:name,password:p1,realName:realName},
+				dataType: 'json',
+				success: function(data){
+					if(data.code == 200){
+						layer.msg('注册成功！',{time:1000});
+						setTimeout(function(){
+							$('.register').removeClass('showDiv').addClass('hideDiv');
+							$('.login').removeClass('hideDiv').addClass('showDiv');
+						},1000)
+					}else{
+						layer.msg(data.data,{time:1000});
+					}
+				}
+			})
+		}
+		function clearAll(){
+			$('#reg_name').val('');
+			$('#reg_password').val('');
+			$('#reg_password2').val('');
+			$('#reg_realName').val('');
+		}
+		function createFamily(){
+			var account = $.trim($('#familyAccount').val());
+			var name = $.trim($('#familyName').val());
+			if(account == ''){
+				layer.msg('请填写家庭组账号！',{time:1000});
+				return;
+			}
+			if(name == ''){
+				layer.msg('请填写家庭组名称！'),{time:1000};
+				return;
+			}
+			$.ajax({
+				url: '/family/addFamily.do',
+				data: {account:account,name:name},
+				type: 'post',
+				dataType: 'json',
+				success: function(data){
+					if(data.code == 200){
+						layer.msg('创建家庭组成功！',{time:1000});
+						setTimeout(function(){
+							window.location.href="/user/index.do";
+						},1000);
+					}else{
+						layer.msg('创建家庭组失败！',{time:1000});
+					}
+				}
+			})
+		}
+	</script>
+</body>
+</html>

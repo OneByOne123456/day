@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${Session.sessionCurrentUser.realName}的主页</title>
+<link rel="stylesheet" href="/static/css/index.css">
+<script type="text/javascript" src="/static/plugin/jquery/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/static/plugin/layer-3.0.1/layer.js"></script>
+</head>
+<body>
+<div class="main">
+	<div class="head">
+		<div class="head-left">菜单列表<div onclick="menuUpDown(event)" class="menu-up"></div></div>
+		<div class="head-center"></div>
+		<div class="head-right">
+			<ul>
+				<li><img class="icon-user" src="/static/img/user/user.png"></li>
+				<li><div>
+						${Session.sessionCurrentUser.realName}
+				</div></li>
+				<li title="注销"><img onclick="logout()" class="icon-logout" src="/static/img/user/logout.png"></li>
+			</ul>
+		</div>
+	</div>
+	<div class="body">
+		<div class="body-left">
+			<div class="menu" data="/user/userData.do">
+				信息管理
+			</div>
+		</div>
+		<div class="body-left">
+			<div class="menu" data="/user/userData.do">
+				日常支出管理
+			</div>
+		</div>
+		<div class="body-right">
+			<iframe id="iframe" src="/user/userData.do"></iframe>
+		</div>
+	</div>
+</div>
+<script>
+	$(function(){
+		$(document).on('click','.menu',function(event){
+			var data = $(event.target).attr('data');
+			$('#iframe').attr('src',data);
+		})
+	})
+	function logout(){
+		layer.confirm("确定要注销吗？",{title:'警告',icon:3},function(){
+			window.location.href='/user/logout.do';
+		})
+	}
+	function menuUpDown(event){
+		if($(event.target).hasClass('menu-down')){
+			$(event.target).removeClass('menu-down').addClass('menu-up');
+			$('.body-left').show();
+			$('.body-right').css('left','200px');
+		}else{
+			$(event.target).removeClass('menu-up').addClass('menu-down');
+			$('.body-left').hide();
+			$('.body-right').css('left','0');
+		}
+	}
+</script>
+</body>
+</html>

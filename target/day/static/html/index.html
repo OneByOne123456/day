@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#if Session.sessionCurrentUser?exists>  
+      <title>${Session.sessionCurrentUser.name}的主页</title>   
+<#else>
+	<title>主页</title>
+</#if>
+</head>
+<body>
+主页
+</body>
+</html>

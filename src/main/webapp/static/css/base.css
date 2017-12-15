@@ -1,0 +1,68 @@
+html{
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;	
+	margin: 0;
+	padding: 0;
+}
+body{
+	width:100%;
+	height:100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* ul */
+ul{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* clear:both */
+.clear{
+	clear: both;
+}
+
+/* table */
+.table{
+	width:100%;
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+.table tr{
+	margin: 0;
+	padding: 0;
+	hieght:30px;
+	line-height:30px;
+}
+.table th{
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	border: 1px solid #ccc;
+}
+.table td{
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	border: 1px solid #ccc;
+}
+/* iconÍ¼±ê */
+i[class^="icon-"]{
+	width:20px;
+	height:20px;
+	background-repeat:no-repeat;
+	background-size:100% 100%;
+	display: inline-block;
+}
+.icon-up{
+	background-image: url("/static/img/user/up.png");
+	
+}
+.icon-down{
+	background-image: url("/static/img/user/down.png");
+}
